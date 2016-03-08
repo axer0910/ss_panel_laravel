@@ -20,4 +20,15 @@ Route::controllers([
 	'password' => 'Auth\PasswordController',
 ]);
 
+Route::group(['prefix' => 'panel', 'namespace' => 'Panel', 'middleware' => 'auth'], function()
+{
+    Route::get('/', 'IndexController@index');
+    /*Route::resource('pages', 'PagesController');
+    Route::resource('comments', 'CommentsController');
+    Route::resource('comments.id', 'CommentsController');
+    Route::resource('article_comments','ArticleCommentsController');
+    Route::resource('article','ArticleController');
+    Route::get('comments/edit/{type}/{id}','CommentsController@editComments');*/
+});
+
 Route::post('testauth','testAuth@auth');

@@ -12,10 +12,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
 	/**
 	 * The database table used by the model.
-	 *
+	 *auth主表定义为user
 	 * @var string
 	 */
 	protected $table = 'user';
+
+    /**
+     * user模型中主键设置为uid
+     * @var string
+     */
 
 	protected $primaryKey = 'uid';
 
@@ -24,7 +29,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['user_name', 'email', 'password'];
+	protected $fillable = ['user_name', 'email', 'password','passwd','transfer_enable','enable','switch','port','exp_date'];
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -33,4 +38,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	protected $hidden = ['password', 'remember_token'];
 
+    /**
+     * 套餐一对一联系
+     */
+
+    public function hasOnePlan()
+    {
+        return $this->hasOne('App\ss_code_type','code_type','plan');
+    }
 }
