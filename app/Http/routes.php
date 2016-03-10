@@ -23,6 +23,7 @@ Route::controllers([
 Route::group(['prefix' => 'panel', 'namespace' => 'Panel', 'middleware' => 'auth'], function()
 {
     Route::get('/', 'IndexController@index');
+    Route::post('/getSSInfo','IndexController@getSSInfo');
     /*Route::resource('pages', 'PagesController');
     Route::resource('comments', 'CommentsController');
     Route::resource('comments.id', 'CommentsController');

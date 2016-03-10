@@ -8,7 +8,7 @@
         <div class="row mg-b">
             <div class="col-xs-6">
                 <h3 class="no-margin">仪表盘</h3>
-                <small>欢迎回来 , {{$userinfo['username']}}</small>
+                <small>欢迎回来 , {{$info['userinfo']['username']}}</small>
             </div>
             <div class="col-xs-6 text-right">
                 <a href="javascript:;" class="fa fa-flash pull-right pd-sm toggle-sidebar" data-toggle="off-canvas" data-move="rtl">
@@ -21,72 +21,16 @@
             <div class = "col-md-8">
                 <div class="row">
 
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                        <section class="panel no-border overflow-hidden widget-social">
-                            <div class="panel-body bg-white">
-                                <h4> {{$userinfo['username']}}
-                                </h4>
-                                <p class="mg-t-xs">
-
-                                    <span class="label label-primary" id="box-plan">{{$userinfo['plan']}}</span>
-                                    <span class="label label-info" id="box-all_transfer">可用{{$userinfo['transfer']}}GB</span>
-                                    <span class="label label-danger">有效期至<span id="box-exp_date">{{$userinfo['exp_date']}}</span></span>
-                                </p>
-                                <i class="fa fa-circle text-primary mg-r-xs"></i>请在合法的范围内使用ShadowSocks服务，遵守相关法律法规。
-                            </div>
-
-                            <div class="col-md-9">
-                                <div class="panel-body no-padding">
-
-                                    <table class="table no-margin">
-                                        <tbody>
-                                        <tr>
-                                            <td><strong>节点名称：</strong></td>
-                                            <td><span class="label label-primary" id="box-node_name"><strong>loading...</strong></span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>服务器：</td>
-                                            <td><span class="label label-primary" id="box-server">loading...</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>端口：</td>
-                                            <td><span class="label label-primary" id="box-port">loading...</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>SS与anyconnect连接密码：</td>
-                                            <td><span class="label label-success" id="box-pass">loading...</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>加密方式</td>
-                                            <td><span class="label label-danger" id="box-method">loading...</span></td>
-                                        </tr>
-                                        <tr style="display: none;" >
-                                            <td>uid</td>
-                                            <td id="uid">uid</td>
-                                        </tr>
-
-
-                                        </tbody>
-                                    </table>
-
-                                    <br/>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                    <div class="col-md-6 col-sm-6 col-xs-12">
-                        <div class="panel">
-                            <div class="panel-heading">流量使用情况</div>
-                            <div class="panel-body text-center">
-                                <div class="piechart" style="width:200px;height: 200px;">
-                                        <span class="visits" data-percent="10" id="used_100">
-                                            <span>
-                                                <div class="percent"></div>
-                                                <small id="transfers">loading...</small>
-                                            </span>
-                                        </span>
-                                </div>
-                            </div>
+                    <div class="col-md-8 ">
+                        <div class="panel-body">
+                            <h4> {{$info['userinfo']['username']}}
+                            </h4>
+                            <p class="mg-t-xs">
+                                <span class="label label-primary" id="box-plan">{{$info['userinfo']['plan']}}</span>
+                                <span class="label label-info" id="box-all_transfer">可用{{$info['userinfo']['transfer']}}GB</span>
+                                <span class="label label-danger">有效期至<span id="box-exp_date">{{$info['userinfo']['exp_date']}}</span></span>
+                            </p>
+                            <i class="fa fa-circle text-primary mg-r-xs"></i>请在合法的范围内使用ShadowSocks服务，遵守相关法律法规。
                         </div>
                     </div>
                     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -117,10 +61,19 @@
                                                     </tr>
                                                     </thead>
                                                     <tbody>
-
-
-
-
+                                                    @foreach($info['nodelist'] as $n)
+                                                        <tr>
+                                                            <td>{{$n->node_name}}</td>
+                                                            <td>#{{$n->id}}</td>
+                                                            <td>{{$n->node_info}}</td>
+                                                            @if($n->node_status == 1)
+                                                                <td>畅通</td>
+                                                            @else
+                                                                <td>暂停使用</td>
+                                                            @endif
+                                                            <td><button type="button" class="btn btn-sm btn-info" onclick="Switch({{$n->id}})">切换</button></td>
+                                                        </tr>
+                                                    @endforeach
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -155,7 +108,10 @@
                 </div>
 
             </div>
-            <div class="col-md-4 col-sm-12 col-xs-12">
+
+
+
+            <div class="col-md-4">
 
                 <div class="panel panel-danger">
                     <div class="panel-heading">
@@ -199,6 +155,7 @@
 </section>
 <!-- /main content -->
 <!-- Validate success Modal -->
+
 <div class="modal fade" id="need-validatemail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-keyboard="false">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -277,110 +234,156 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript">
+</div>
 
-        //Switch(10);
-        //GetSys();
 
-        function Switch(id){
+<div class="modal fade" id="show-ssinfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">连接信息</h4><br>
+                <i class="fa fa-circle text-primary mg-r-xs"></i>请在合法的范围内使用ShadowSocks服务，遵守相关法律法规。
+            </div>
+            <div class="modal-body">
+                <table class="table no-margin">
+                    <thead></thead>
+                    <tbody>
+                    <tr>
+                        <td><strong>节点名称：</strong></td>
+                        <td><span class="label label-primary" id="box-node_name"><strong>loading...</strong></span></td>
+                    </tr>
+                    <tr>
+                        <td>服务器：</td>
+                        <td><span class="label label-primary" id="box-server">loading...</span></td>
+                    </tr>
+                    <tr>
+                        <td>端口：</td>
+                        <td><span class="label label-primary" id="box-port">loading...</span></td>
+                    </tr>
+                    <tr>
+                        <td>SS与anyconnect连接密码：</td>
+                        <td><span class="label label-success" id="box-pass">loading...</span></td>
+                    </tr>
+                    <tr>
+                        <td>加密方式</td>
+                        <td><span class="label label-danger" id="box-method">loading...</span></td>
+                    </tr>
+                    <tr style="display: none;" >
+                        <td>uid</td>
+                        <td id="uid">uid</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-info">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
 
-            $("#qrcode").html("读取二维码中");
+    $(document).ready(function () {
+       // $('#show-ssinfo').modal('show');
+    });
 
-            $.ajax({
-                type: "POST",
-                url: "_validate.php",
-                dataType: "json",
-                data: {
-                    uid: $("#uid").text(),
-                    node_id: id
-                },
-                success: function (data) {
-                    //document.getElementById("ShowCode").innerHTML = data.code;
-                    if (data.msg == '1') {
-                        if(data.type == 0){
-                            $('#need-validatemail').modal('show');
-                            $('#need-validatemail').on('hidden.bs.modal', function (e) {
-                                window.location = 'UpdateProfile.php';
-                            })
+    function Switch(id){
+
+        $("#qrcode").html("读取二维码中");
+
+        $.ajax({
+            type: "POST",
+            url: "/panel/getSSInfo",
+            dataType: "json",
+            data: {
+                uid: $("#uid").text(),
+                node_id: id
+            },
+            success: function (data) {
+                //document.getElementById("ShowCode").innerHTML = data.code;
+                /*$('#need-validatemail').on('hidden.bs.modal', function (e) {
+                    window.location = 'UpdateProfile.php';
+                })*/
+
+                if (data.msg == '1') {
+                    if(data.type == 0){
+                        $('#show-ssinfo').modal('show');
+
+                    }
+                    else{
+                        if(data.enable == 0){
+                            alert("套餐失效了，点击确定购买套餐");
+                            window.location = 'pricing.php';
+                        }
+                        else if (data.enable == -1){
+                            alert("请先验证邮箱！");
+                            window.location = 'UpdateProfile.php';
                         }
                         else{
-                            if(data.enable == 0){
-                                alert("套餐失效了，点击确定购买套餐");
-                                window.location = 'pricing.php';
-                            }
-                            else if (data.enable == -1){
-                                alert("请先验证邮箱！");
-                                window.location = 'UpdateProfile.php';
-                            }
-                            else{
-                                $("#qrcode").html("");
-                                jQuery('#qrcode').qrcode(data.ssqr);
-                                $("#box-node_name").html(data.node_name);
-                                $("#box-port").html(data.port);
-                                $("#box-pass").html(data.pass);
-                                $("#box-plan").html(data.plan);
-                                $("#box-server").html(data.server);
-                                $("#box-exp_date").html(data.exp_date);
-                                $("#box-method").html(data.method);
-                                $("#transfers").html("已用流量：" + data.transfers + "MB");
-                                $("#used_100").attr("data-percent", data.used_100);
-                                pie();
-                                $("#box-all_transfer").html("可用" + data.all_transfer + "GB");
-                                $("#unused_transfer").html("剩余流量：" + data.unused_transfer + "GB");
-                            }
-                        }
-
-                    }
-                    else if (data.msg == '-1') {
-                        alert("查询node失败!");
-                        $("#qrcode").html("");
-                    }
-                    else if (data.msg == '-2') {
-                        $("#qrcode").html("输入正确的使用码...");
-                        $("#info-box").attr("style", "display:none;");
-                    }
-                    else {
-                        alert("未知错误");
-                    }
-                }
-            })
-        }
-
-        function GetSys(){
-            $.ajax(
-                    {
-                        type: "POST",
-                        url: "_sys.php",
-                        dataType: "json",
-                        data: {
-                        },
-                        success: function(data){
-                            $("#KeepAlive_Past1H").html(data.KeepAlive_Past1H);
-                            $("#KeepAlive_now").html(data.KeepAlive_now);
-                            $("#KeepAlive_Past5Min").html(data.KeepAlive_Past5Min);
-                            $("#now").html(data.now);
-                        },
-                        error: function(jqXHR){
-                            alert("发生错误"+jqXHR.status);
+                            $("#qrcode").html("");
+                           // jQuery('#qrcode').qrcode(data.ssqr);
+                            $("#box-node_name").html(data.node_name);
+                            $("#box-port").html(data.node_port);
+                            $("#box-pass").html(data.node_passwd);
+                            $("#box-plan").html(data.node_plan);
+                            $("#box-server").html(data.node_server);
+                            $("#box-method").html(data.node_method);
+                            //pie();
+                            $('#show-ssinfo').modal('show');
                         }
                     }
-            );
-        }
 
-        function pie(){
-            $('#used_100').easyPieChart({
-                size: 200,
-                lineWidth: 20,
-                barColor: '#2dcb73',
-                trackColor: false,
-                lineCap: 'round',
-                easing: 'easeOutBounce',
-                onStep: function (from, to, percent) {
-                    $(this.el).find('.percent').text(Math.round(percent));
                 }
-            });
-        }
+                else if (data.msg == '-1') {
+                    alert("查询node失败!");
+                    $("#qrcode").html("");
+                }
+                else if (data.msg == '-2') {
+                    $("#qrcode").html("输入正确的使用码...");
+                    $("#info-box").attr("style", "display:none;");
+                }
+                else {
+                    alert("未知错误");
+                }
+            }
+        })
+    }
+
+    function GetSys(){
+        $.ajax(
+                {
+                    type: "POST",
+                    url: "_sys.php",
+                    dataType: "json",
+                    data: {
+                    },
+                    success: function(data){
+                        $("#KeepAlive_Past1H").html(data.KeepAlive_Past1H);
+                        $("#KeepAlive_now").html(data.KeepAlive_now);
+                        $("#KeepAlive_Past5Min").html(data.KeepAlive_Past5Min);
+                        $("#now").html(data.now);
+                    },
+                    error: function(jqXHR){
+                        alert("发生错误"+jqXHR.status);
+                    }
+                }
+        );
+    }
+
+    function pie(){
+        $('#used_100').easyPieChart({
+            size: 200,
+            lineWidth: 20,
+            barColor: '#2dcb73',
+            trackColor: false,
+            lineCap: 'round',
+            easing: 'easeOutBounce',
+            onStep: function (from, to, percent) {
+                $(this.el).find('.percent').text(Math.round(percent));
+            }
+        });
+    }
 
 
-    </script>
+</script>
 @endsection

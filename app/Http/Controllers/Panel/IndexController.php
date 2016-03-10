@@ -3,14 +3,15 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\User;
-use App\ss_code_type;
-use Auth;
-use Illuminate\Http\Request;
+use App\ss_node;
+use Auth,Input;
+use Request;
+
 
 class IndexController extends Controller {
 
 	/**
-	 * Display a listing of the resource.
+	 * 显示panel视图，输出用户基本套餐信息
 	 *
 	 * @return Response
 	 */
@@ -19,77 +20,49 @@ class IndexController extends Controller {
         $gb = 1024*1024*1024;
 
         $user = User::find(Auth::id());
+        $nodelist = ss_node::all();
         $userinfo['username'] = $user->user_name;
         $userinfo['plan'] = $user->hasOnePlan->code_type_name;
         $userinfo['uid'] = $user->id;
         $userinfo['exp_date'] = $user->exp_date;
         $userinfo['transfer'] = $user->transfer_enable/$gb;
         $userinfo['sspasswd'] = $user->passwd;
-		return view('panel.index')->with('userinfo',$userinfo);
+
+        $info = [
+          'userinfo' => $userinfo,
+          'nodelist' => $nodelist
+        ];
+
+		return view('panel.index')->with('info',$info);
 	}
 
 	/**
-	 * Show the form for creating a new resource.
+	 * 获得详细连接参数
 	 *
-	 * @return Response
+	 * @return ResponseJson
 	 */
-	public function create()
-	{
-		//
-	}
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @return Response
-	 */
-	public function store()
-	{
-		//
-	}
 
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
-		//
-	}
+    public function getSSInfo()
+    {
+        if (Request::ajax())
+        {
+            $id = Input::get('node_id');
+            $node = ss_node::find($id);
+            return response()->json([
+                'node_name' => $node->node_name,
+                'node_server' => $node->node_server,
+                'node_port' => User::find(Auth::id())->port,
+                'node_passwd' => User::find(Auth::id())->passwd,
+                'node_method' => $node->node_method,
+                'enbale' => User::find(Auth::id())->enable,
+                'msg' => 1
+            ]);
+        }
+        else{
+            echo 'Invalid request';
+        }
+    }
 
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		//
-	}
-
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($id)
-	{
-		//
-	}
-
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function destroy($id)
-	{
-		//
-	}
 
 }
