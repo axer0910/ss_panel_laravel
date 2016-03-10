@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration {
 			$table->increments('uid');
 			$table->string('user_name');
 			$table->string('email')->unique();
-			$table->string('pass', 60);
+			$table->string('password', 60);
 			$table->string('passwd',30);
             $table->bigInteger('t');
             $table->bigInteger('u');

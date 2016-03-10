@@ -31,7 +31,7 @@
     <![endif]-->
 
     <!-- load modernizer -->
-    <script src="{{asset('/asset/vendor/modernizr.js')}}')}}"></script>
+    <script src="{{asset('/asset/vendor/modernizr.js')}}"></script>
     <!-- core scripts -->
     <script src="{{asset('/asset/vendor/jquery-1.11.1.min.js')}}"></script>
     <script src="{{asset('/asset/js/bootstrap.min.js')}}"></script>
@@ -39,6 +39,9 @@
     <script src="{{asset('/asset/vendor/jquery.placeholder.js')}}"></script>
     <script src="{{asset('/asset/vendor/fastclick.js')}}"></script>
     <!-- /core scripts -->
+
+    <!-- load modernizer -->
+    <script src="/asset/vendor/modernizr.js"></script>
 </head>
 
 <!-- body -->

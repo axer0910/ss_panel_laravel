@@ -46,7 +46,12 @@ class Registrar implements RegistrarContract {
         $exp_date = date("Y-m-d H:i:s",$days);
 
         $max_port = DB::table('user')->select('port')->orderBy('uid','desc')->take(1)->get();
-        $max_port = $max_port[0]->port + 1;
+        if ($max_port){
+            $max_port = $max_port[0]->port + 1;
+        }
+        else{
+            $max_port=50000;
+        }
 		return User::create([
 			'user_name' => $data['name'],
 			'email' => $data['email'],

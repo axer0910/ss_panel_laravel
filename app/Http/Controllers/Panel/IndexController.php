@@ -27,10 +27,17 @@ class IndexController extends Controller {
         $userinfo['exp_date'] = $user->exp_date;
         $userinfo['transfer'] = $user->transfer_enable/$gb;
         $userinfo['sspasswd'] = $user->passwd;
+        $userinfo['used'] = round(($user->d+$user->u)/$gb,1);
+
+        $time = time()-3600;
+        $count = User::where('t', '>', $time)->count();
+
+        //获得服务器实时在线人数（一小时）
 
         $info = [
           'userinfo' => $userinfo,
-          'nodelist' => $nodelist
+          'nodelist' => $nodelist,
+          'onlineCount' => $count
         ];
 
 		return view('panel.index')->with('info',$info);
@@ -63,6 +70,7 @@ class IndexController extends Controller {
             echo 'Invalid request';
         }
     }
+
 
 
 }
